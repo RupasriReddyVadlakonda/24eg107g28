@@ -16,7 +16,7 @@ WORKDIR /app
 
 RUN groupadd --system app && useradd --system --gid app --home-dir /app app
 
-COPY --from=build /workspace/target/personal-data-vault-1.0.0.jar /app/app.jar
+COPY --from=build /workspace/target/personal-data-vault-0.0.1-SNAPSHOT.jar /app/app.jar
 
 USER app
 
