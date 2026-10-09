@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+!.env.example
+.gitignore
+.idea
+.vscode
+.kombai
+.amazonq
+frontend
+node_modules
+**/node_modules
+**/dist
+**/target
+backend/src/main/resources/application.properties
+*.log

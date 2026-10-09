@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Marcellus&family=Urbanist:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-vault-page: #401511;
+  --color-vault-nav: #310e0a;
+  --color-vault-well: #4b2a21;
+  --color-vault-lit: #fadfc9;
+  --color-vault-secondary: #d99f6c;
+  --color-vault-copper: #b2813e;
+  --color-vault-pending: #a08c46;
+  --color-vault-olive: #7d6c58;
+  --color-vault-alert: #953f2f;
+  --color-vault-keyline: #5a4135;
+  --font-display: "Marcellus", Georgia, serif;
+  --font-sans: "Urbanist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  html { min-width: 320px; background: var(--color-vault-page); }
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    color: var(--color-vault-lit);
+    background: var(--color-vault-page);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  button, input, textarea, select { font: inherit; }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  a { color: inherit; }
+  ::selection { color: var(--color-vault-nav); background: var(--color-vault-secondary); }
+  :focus-visible { outline: 2px solid var(--color-vault-secondary); outline-offset: 3px; }
+}
+
+@layer components {
+  .vault-scrollbar { scrollbar-color: var(--color-vault-olive) transparent; scrollbar-width: thin; }
+  .vault-dialog::backdrop { background: rgb(18 7 5 / 72%); backdrop-filter: blur(2px); }
+  .vault-dialog { color: inherit; }
+}
