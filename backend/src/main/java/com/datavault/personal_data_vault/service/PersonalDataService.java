@@ -94,6 +94,16 @@ public class PersonalDataService {
         return this.toResponse((PersonalData)this.personalDataRepository.save(data));
     }
 
+    @Transactional
+    public PersonalDataResponse patch(Long userId, Long dataId, com.datavault.personal_data_vault.dto.request.PersonalDataPatchRequest request) {
+        PersonalData data = personalDataRepository.findByIdAndUserId(dataId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Personal data not found"));
+        if (request.getDataType() != null) data.setDataType(request.getDataType());
+        if (request.getValue() != null) data.setEncryptedValue(encryptionService.encrypt(request.getValue()));
+        if (request.isDescriptionProvided()) data.setDescription(request.getDescription());
+        return toResponse(personalDataRepository.save(data));
+    }
+
     private User findUser(Long userId) {
         return (User)this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }

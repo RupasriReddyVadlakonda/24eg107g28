@@ -81,6 +81,12 @@ public class AuthService {
         return UserResponse.from(user);
     }
 
+    public com.datavault.personal_data_vault.dto.response.UserResponse profile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return com.datavault.personal_data_vault.dto.response.UserResponse.from(user);
+    }
+
     private AuthResponse issueTokens(User user) {
         UserPrincipal principal = UserPrincipal.from(user);
         String access = this.jwtService.generateAccessToken(principal, Map.of("userId", user.getId(), "role", user.getRole().name(), "tokenType", "USER"));
