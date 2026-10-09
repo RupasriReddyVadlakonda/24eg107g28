@@ -1,7 +1,0 @@
-.git
-.env
-.env.*
-!.env.example
-target
-**/target
-src/main/resources/application.properties
