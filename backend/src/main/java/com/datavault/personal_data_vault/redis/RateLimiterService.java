@@ -3,6 +3,7 @@ package com.datavault.personal_data_vault.redis;
 import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,10 @@ public class RateLimiterService {
 
     private final ConcurrentHashMap<String, Window> rateLimitWindows = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Window> unauthorizedWindows = new ConcurrentHashMap<>();
+    private final AtomicInteger cleanupCounter = new AtomicInteger();
 
     public boolean isAllowed(String key) {
+        cleanupExpiredWindowsOccasionally();
         Window window = getOrCreateWindow(rateLimitWindows, key, windowSeconds);
         long count = window.count().incrementAndGet();
         if (count == (long) maxRequests + 1L) {
@@ -64,6 +67,16 @@ public class RateLimiterService {
     public void resetCounter(String key) {
         rateLimitWindows.remove(key);
         unauthorizedWindows.remove(key);
+    }
+
+    private void cleanupExpiredWindowsOccasionally() {
+        if (cleanupCounter.incrementAndGet() % 256 != 0) {
+            return;
+        }
+
+        Instant now = Instant.now();
+        rateLimitWindows.entrySet().removeIf(entry -> !now.isBefore(entry.getValue().expiresAt()));
+        unauthorizedWindows.entrySet().removeIf(entry -> !now.isBefore(entry.getValue().expiresAt()));
     }
 
     private Window getOrCreateWindow(ConcurrentHashMap<String, Window> map, String key, int ttlSeconds) {

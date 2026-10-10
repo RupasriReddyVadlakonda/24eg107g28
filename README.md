@@ -64,7 +64,7 @@ For cryptographic production key generation, use a vetted secret manager or cryp
 4. API base URL: `http://localhost:8080/api`.
 5. Swagger UI: `http://localhost:8080/swagger-ui.html`; OpenAPI JSON: `http://localhost:8080/api-docs`.
 
-The active backend defaults `JPA_DDL_AUTO` to `validate` to avoid implicit production schema mutation. Set it explicitly to `update` only for a controlled initial/local setup; there are currently no versioned database migrations. Do not rotate `ENCRYPTION_KEY` without a planned re-encryption/key-version migration; existing ciphertext requires its original key.
+The active backend currently defaults `JPA_DDL_AUTO` to `update` for compatibility with the existing deployment; this has no reviewed versioned migrations and should be treated as a deployment risk. Before moving to `validate`, compare the live MySQL schema against the entities and apply a reviewed migration. Do not rotate `ENCRYPTION_KEY` without a planned re-encryption/key-version migration; existing ciphertext requires its original key.
 
 ## Deploy on Render
 

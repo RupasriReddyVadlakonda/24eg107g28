@@ -73,9 +73,6 @@ public class ApplicationController {
         if (!rateLimiterService.isAllowed("app-token:" + servletRequest.getRemoteAddr())) {
             throw new RateLimitExceededException();
         }
-        if (!rateLimiterService.isAllowed("app-token-client:" + request.getClientId())) {
-            throw new RateLimitExceededException();
-        }
         return ResponseEntity.ok(ApiResponse.success("Application token issued", this.applicationService.token(request.getClientId(), request.getClientSecret())));
     }
 
