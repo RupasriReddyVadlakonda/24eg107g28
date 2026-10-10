@@ -21,7 +21,7 @@ public class User {
     private Long id;
     @Column(nullable=false)
     private String fullName;
-    @Column(nullable=false, unique=true, length=254)
+    @Column(nullable=false, unique=true)
     private String email;
     @Column(nullable=false)
     private String passwordHash;

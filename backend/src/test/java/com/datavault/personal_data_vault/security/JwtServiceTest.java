@@ -27,6 +27,14 @@ class JwtServiceTest {
     }
 
     @Test
+    void principalStringRepresentationDoesNotExposePasswordHash() {
+        UserPrincipal principal = new UserPrincipal(42L, "user@example.test", "encoded-password-hash", User.Role.USER, true);
+
+        Assertions.assertFalse(principal.toString().contains("encoded-password-hash"));
+        Assertions.assertTrue(principal.toString().contains("[REDACTED]"));
+    }
+
+    @Test
     void rejectsWeakJwtKey() {
         String secret = Encoders.BASE64.encode(new byte[16]);
         Assertions.assertThrows(IllegalArgumentException.class, () -> new JwtService(secret, 900000L));

@@ -164,7 +164,7 @@ public class RefreshToken {
 
         @Generated
         public String toString() {
-            return "RefreshToken.RefreshTokenBuilder(id=" + this.id + ", tokenHash=" + this.tokenHash + ", user=" + String.valueOf(this.user) + ", expiresAt=" + String.valueOf(this.expiresAt) + ", revoked$value=" + this.revoked$value + ")";
+            return "RefreshToken.RefreshTokenBuilder(id=" + this.id + ", tokenHash=[REDACTED], user=[REDACTED], expiresAt=" + String.valueOf(this.expiresAt) + ", revoked$value=" + this.revoked$value + ")";
         }
     }
 }

@@ -40,5 +40,11 @@ public record UserPrincipal(Long id, String email, String passwordHash, User.Rol
     public boolean isEnabled() {
         return this.enabled;
     }
+
+    @Override
+    public String toString() {
+        return "UserPrincipal[id=" + this.id + ", email=[REDACTED], passwordHash=[REDACTED], role="
+                + this.role + ", enabled=" + this.enabled + "]";
+    }
 }
 

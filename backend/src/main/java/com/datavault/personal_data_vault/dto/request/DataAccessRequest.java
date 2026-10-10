@@ -96,7 +96,7 @@ public class DataAccessRequest {
 
     @Generated
     public String toString() {
-        return "DataAccessRequest(userId=" + this.getUserId() + ", purpose=" + this.getPurpose() + ", value=[REDACTED])";
+        return "DataAccessRequest(userId=" + this.getUserId() + ", purpose=[REDACTED], value=[REDACTED])";
     }
 }
 

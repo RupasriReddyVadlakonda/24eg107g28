@@ -78,7 +78,7 @@ public class LoginRequest {
 
     @Generated
     public String toString() {
-        return "LoginRequest(email=" + this.getEmail() + ", password=[REDACTED])";
+        return "LoginRequest(email=[REDACTED], password=[REDACTED])";
     }
 }
 

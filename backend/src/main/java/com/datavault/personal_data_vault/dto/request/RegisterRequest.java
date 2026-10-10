@@ -119,7 +119,7 @@ public class RegisterRequest {
 
     @Generated
     public String toString() {
-        return "RegisterRequest(fullName=" + this.getFullName() + ", email=" + this.getEmail() + ", password=[REDACTED], phoneNumber=[REDACTED])";
+        return "RegisterRequest(fullName=[REDACTED], email=[REDACTED], password=[REDACTED], phoneNumber=[REDACTED])";
     }
 }
 

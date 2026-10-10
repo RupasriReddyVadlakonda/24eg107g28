@@ -143,7 +143,7 @@ public class AppRegistrationResponse {
 
     @Generated
     public String toString() {
-        return "AppRegistrationResponse(id=" + this.getId() + ", applicationName=" + this.getApplicationName() + ", clientId=" + this.getClientId() + ", clientSecret=[REDACTED], redirectUri=" + this.getRedirectUri() + ", message=" + this.getMessage() + ")";
+        return "AppRegistrationResponse(id=" + this.getId() + ", applicationName=[REDACTED], clientId=[REDACTED], clientSecret=[REDACTED], redirectUri=[REDACTED], message=" + this.getMessage() + ")";
     }
 
     @Generated
