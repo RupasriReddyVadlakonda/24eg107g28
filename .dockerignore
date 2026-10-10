@@ -12,5 +12,4 @@ node_modules
 **/node_modules
 **/dist
 **/target
-backend/src/main/resources/application.properties
 *.log
