@@ -8,6 +8,7 @@ import lombok.Generated;
 public class LoginRequest {
     @NotBlank
     @Email
+    @Size(max = 254)
     private String email;
     @NotBlank
     @Size(max=100)
@@ -77,7 +78,7 @@ public class LoginRequest {
 
     @Generated
     public String toString() {
-        return "LoginRequest(email=" + this.getEmail() + ", password=" + this.getPassword() + ")";
+        return "LoginRequest(email=" + this.getEmail() + ", password=[REDACTED])";
     }
 }
 

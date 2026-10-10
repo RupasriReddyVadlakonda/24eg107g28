@@ -9,6 +9,10 @@ import com.datavault.personal_data_vault.dto.response.AppResponse;
 import com.datavault.personal_data_vault.dto.response.AppTokenResponse;
 import com.datavault.personal_data_vault.security.UserPrincipal;
 import com.datavault.personal_data_vault.service.ApplicationService;
+import com.datavault.personal_data_vault.redis.RateLimiterService;
+import com.datavault.personal_data_vault.exception.RateLimitExceededException;
+import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -31,8 +35,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value={"/api/apps"})
 public class ApplicationController {
     private final ApplicationService applicationService;
+    private final RateLimiterService rateLimiterService;
 
     @PostMapping
+    @Operation(security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ApiResponse<AppRegistrationResponse>> register(@AuthenticationPrincipal UserPrincipal user, @Valid @RequestBody AppRegistrationRequest request) {
         return ResponseEntity.status((HttpStatusCode)HttpStatus.CREATED).body(ApiResponse.success("Application registered", this.applicationService.register(user.id(), request)));
     }
@@ -59,13 +65,24 @@ public class ApplicationController {
     }
 
     @PostMapping(value={"/token"})
-    public ResponseEntity<ApiResponse<AppTokenResponse>> token(@Valid @RequestBody AppTokenRequest request) {
+    @Operation(security = {})
+    public ResponseEntity<ApiResponse<AppTokenResponse>> token(
+            @Valid @RequestBody AppTokenRequest request,
+            HttpServletRequest servletRequest
+    ) {
+        if (!rateLimiterService.isAllowed("app-token:" + servletRequest.getRemoteAddr())) {
+            throw new RateLimitExceededException();
+        }
+        if (!rateLimiterService.isAllowed("app-token-client:" + request.getClientId())) {
+            throw new RateLimitExceededException();
+        }
         return ResponseEntity.ok(ApiResponse.success("Application token issued", this.applicationService.token(request.getClientId(), request.getClientSecret())));
     }
 
     @Generated
-    public ApplicationController(ApplicationService applicationService) {
+    public ApplicationController(ApplicationService applicationService, RateLimiterService rateLimiterService) {
         this.applicationService = applicationService;
+        this.rateLimiterService = rateLimiterService;
     }
 }
 

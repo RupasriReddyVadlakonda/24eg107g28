@@ -21,7 +21,7 @@ public class User {
     private Long id;
     @Column(nullable=false)
     private String fullName;
-    @Column(nullable=false, unique=true)
+    @Column(nullable=false, unique=true, length=254)
     private String email;
     @Column(nullable=false)
     private String passwordHash;
@@ -247,7 +247,7 @@ public class User {
 
         @Generated
         public String toString() {
-            return "User.UserBuilder(id=" + this.id + ", fullName=" + this.fullName + ", email=" + this.email + ", passwordHash=" + this.passwordHash + ", phoneNumber=" + this.phoneNumber + ", role=" + String.valueOf((Object)this.role) + ", enabled$value=" + this.enabled$value + ", createdAt=" + String.valueOf(this.createdAt) + ", updatedAt=" + String.valueOf(this.updatedAt) + ")";
+            return "User.UserBuilder(id=" + this.id + ", fullName=[REDACTED], email=[REDACTED], passwordHash=[REDACTED], phoneNumber=[REDACTED], role=" + String.valueOf((Object)this.role) + ", enabled$value=" + this.enabled$value + ", createdAt=" + String.valueOf(this.createdAt) + ", updatedAt=" + String.valueOf(this.updatedAt) + ")";
         }
     }
 

@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -35,6 +36,13 @@ class PersonalDataVaultIntegrationTest {
     }
 
     @Test
+    void publicRootReportsServiceAvailability() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success", Matchers.is(true)));
+    }
+
+    @Test
     void registrationLoginVaultOwnershipAndEncryptionWorkEndToEnd() throws Exception {
         RegisteredUser user = this.registerUser();
         this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.get((String)"/api/auth/me", (Object[])new Object[0]).header("Authorization", new Object[]{this.bearer(user.accessToken())})).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.jsonPath((String)"$.data.email", (Matcher)Matchers.is((Object)user.email()))).andExpect(MockMvcResultMatchers.jsonPath((String)"$.data.fullName", (Matcher)Matchers.is((Object)"Vault User")));
@@ -51,7 +59,7 @@ class PersonalDataVaultIntegrationTest {
         this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.get((String)"/api/auth/me", (Object[])new Object[0])).andExpect(MockMvcResultMatchers.status().isUnauthorized());
         this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.get((String)"/api/admin/users", (Object[])new Object[0]).header("Authorization", new Object[]{this.bearer(user.accessToken())})).andExpect(MockMvcResultMatchers.status().isForbidden());
         String login = "{\"email\":\"%s\",\"password\":\"StrongPass!7\"}\n".formatted(user.email());
-        this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.post((String)"/api/auth/login", (Object[])new Object[0]).contentType(MediaType.APPLICATION_JSON).content(login)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.jsonPath((String)"$.success", (Matcher)Matchers.is((Object)true)));
+        this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.post((String)"/api/auth/login", (Object[])new Object[0]).with(requestFrom("192.0.2.52")).contentType(MediaType.APPLICATION_JSON).content(login)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.jsonPath((String)"$.success", (Matcher)Matchers.is((Object)true)));
         this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.post((String)"/api/auth/logout", (Object[])new Object[0]).header("Authorization", new Object[]{this.bearer(user.accessToken())}).contentType(MediaType.APPLICATION_JSON).content("{\"refreshToken\":\"" + rotatedRefreshToken + "\"}")).andExpect(MockMvcResultMatchers.status().isOk());
         this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.post((String)"/api/auth/refresh", (Object[])new Object[0]).contentType(MediaType.APPLICATION_JSON).content("{\"refreshToken\":\"" + rotatedRefreshToken + "\"}")).andExpect(MockMvcResultMatchers.status().isUnauthorized());
         Assertions.assertTrue(this.userRepository.findById(Long.valueOf(user.userId())).isPresent());
@@ -67,6 +75,9 @@ class PersonalDataVaultIntegrationTest {
         long appId = app.path("id").asLong();
         String appTokenResponse = this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.post((String)"/api/apps/token", (Object[])new Object[0]).contentType(MediaType.APPLICATION_JSON).content("{\"clientId\":\"" + app.path("clientId").asText() + "\",\"clientSecret\":\"" + app.path("clientSecret").asText() + "\"}")).andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
         String appToken = this.objectMapper.readTree(appTokenResponse).path("data").path("accessToken").asText();
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/auth/me")
+                        .header("Authorization", this.bearer(appToken)))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
         String consentResponse = this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.post((String)"/api/consents/request", (Object[])new Object[0]).header("Authorization", new Object[]{this.bearer(appToken)}).contentType(MediaType.APPLICATION_JSON).content("{\"userId\":" + user.userId() + ",\"applicationId\":" + appId + ",\"dataType\":\"EMAIL\",\"purpose\":\"Order Confirmation\",\"operation\":\"READ\",\"requestedDurationDays\":7}")).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn().getResponse().getContentAsString();
         long consentId = this.objectMapper.readTree(consentResponse).path("data").path("id").asLong();
         this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.put((String)"/api/consents/{id}/grant", (Object[])new Object[]{consentId}).header("Authorization", new Object[]{userHeader})).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.jsonPath((String)"$.data.status", (Matcher)Matchers.is((Object)"GRANTED")));
@@ -77,6 +88,62 @@ class PersonalDataVaultIntegrationTest {
         this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.get((String)"/api/audit/logs", (Object[])new Object[0]).header("Authorization", new Object[]{userHeader})).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.jsonPath((String)"$.data.length()", (Matcher)Matchers.is((Object)4)));
         this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.put((String)"/api/consents/{id}/revoke", (Object[])new Object[]{consentId}).header("Authorization", new Object[]{userHeader})).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.jsonPath((String)"$.data.status", (Matcher)Matchers.is((Object)"REVOKED")));
         this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.get((String)"/api/data-access/EMAIL", (Object[])new Object[0]).header("Authorization", new Object[]{this.bearer(appToken)}).param("userId", new String[]{Long.toString(user.userId())}).param("purpose", new String[]{"Order Confirmation"})).andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    void duplicateRegistrationReturnsConflict() throws Exception {
+        RegisteredUser user = this.registerUser();
+        String body = "{\"fullName\":\"Vault User\",\"email\":\"%s\",\"password\":\"StrongPass!7\"}".formatted(user.email());
+
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+    }
+
+    @Test
+    void rejectsInvalidBearerTokensOnProtectedRoutes() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/vault/data")
+                        .header("Authorization", "Bearer not-a-valid-jwt"))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    void failedLoginReturnsUnauthorized() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
+                        .with(requestFrom("192.0.2.51"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"missing@example.test\",\"password\":\"Incorrect!9\"}"))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode", Matchers.is("AUTHENTICATION_FAILED")));
+    }
+
+    @Test
+    void limitsRepeatedLoginAttempts() throws Exception {
+        String body = "{\"email\":\"missing@example.test\",\"password\":\"Incorrect!9\"}";
+        for (int attempt = 0; attempt < 10; attempt++) {
+            this.mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
+                            .with(requestFrom("192.0.2.50"))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(body))
+                    .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+        }
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
+                        .with(requestFrom("192.0.2.50"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(MockMvcResultMatchers.status().isTooManyRequests())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode", Matchers.is("RATE_LIMIT_EXCEEDED")));
+    }
+
+    @Test
+    void corsPreflightAllowsConfiguredFrontendOrigin() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.options("/api/vault/data")
+                        .header("Origin", "http://localhost:5173")
+                        .header("Access-Control-Request-Method", "GET")
+                        .header("Access-Control-Request-Headers", "authorization"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.header().string("Access-Control-Allow-Origin", "http://localhost:5173"));
     }
 
     @Test
@@ -108,6 +175,13 @@ class PersonalDataVaultIntegrationTest {
         String response = this.mockMvc.perform((RequestBuilder)MockMvcRequestBuilders.post((String)"/api/auth/register", (Object[])new Object[0]).contentType(MediaType.APPLICATION_JSON).content(content)).andExpect(MockMvcResultMatchers.status().isCreated()).andExpect(MockMvcResultMatchers.jsonPath((String)"$.success", (Matcher)Matchers.is((Object)true))).andReturn().getResponse().getContentAsString();
         JsonNode data = this.objectMapper.readTree(response).path("data");
         return new RegisteredUser(data.path("userId").asLong(), email, data.path("accessToken").asText(), data.path("refreshToken").asText());
+    }
+
+    private RequestPostProcessor requestFrom(String address) {
+        return request -> {
+            request.setRemoteAddr(address);
+            return request;
+        };
     }
 
     private String bearer(String token) {

@@ -96,7 +96,7 @@ public class PersonalDataRequest {
 
     @Generated
     public String toString() {
-        return "PersonalDataRequest(dataType=" + String.valueOf((Object)this.getDataType()) + ", value=" + this.getValue() + ", description=" + this.getDescription() + ")";
+        return "PersonalDataRequest(dataType=" + String.valueOf((Object)this.getDataType()) + ", value=[REDACTED], description=[REDACTED])";
     }
 }
 

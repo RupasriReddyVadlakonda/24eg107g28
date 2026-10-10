@@ -8,6 +8,10 @@ import com.datavault.personal_data_vault.dto.response.AuthResponse;
 import com.datavault.personal_data_vault.dto.response.UserResponse;
 import com.datavault.personal_data_vault.security.UserPrincipal;
 import com.datavault.personal_data_vault.service.AuthService;
+import com.datavault.personal_data_vault.redis.RateLimiterService;
+import com.datavault.personal_data_vault.exception.RateLimitExceededException;
+import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.Generated;
@@ -26,35 +30,56 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value={"/api/auth"})
 public class AuthController {
     private final AuthService authService;
+    private final RateLimiterService rateLimiterService;
 
     @PostMapping(value={"/register"})
-    public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
+    @Operation(security = {})
+    public ResponseEntity<ApiResponse<AuthResponse>> register(
+            @Valid @RequestBody RegisterRequest request,
+            HttpServletRequest servletRequest
+    ) {
+        enforceRateLimit("register:" + servletRequest.getRemoteAddr());
         return ResponseEntity.status((HttpStatusCode)HttpStatus.CREATED).body(ApiResponse.success("Registration successful", this.authService.register(request)));
     }
 
     @PostMapping(value={"/login"})
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+    @Operation(security = {})
+    public ResponseEntity<ApiResponse<AuthResponse>> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletRequest servletRequest
+    ) {
+        enforceRateLimit("login:" + servletRequest.getRemoteAddr());
         return ResponseEntity.ok(ApiResponse.success("Login successful", this.authService.login(request)));
     }
 
     @PostMapping(value={"/refresh"})
+    @Operation(security = {})
     public ResponseEntity<ApiResponse<AuthResponse>> refresh(@Valid @RequestBody RefreshTokenRequest request) {
         return ResponseEntity.ok(ApiResponse.success("Tokens rotated", this.authService.refresh(request.getRefreshToken())));
     }
 
     @PostMapping(value={"/logout"})
+    @Operation(security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal UserPrincipal user, @Valid @RequestBody RefreshTokenRequest request) {
         this.authService.logout(request.getRefreshToken(), user.id());
         return ResponseEntity.ok(ApiResponse.success("Logged out"));
     }
 
     @GetMapping(value={"/me"})
+    @Operation(security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth"))
     public ApiResponse<UserResponse> profile(@AuthenticationPrincipal UserPrincipal user) {
         return ApiResponse.success("Profile retrieved", this.authService.profile(user.id()));
     }
 
+    private void enforceRateLimit(String key) {
+        if (!rateLimiterService.isAllowed(key)) {
+            throw new RateLimitExceededException();
+        }
+    }
+
     @Generated
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, RateLimiterService rateLimiterService) {
         this.authService = authService;
+        this.rateLimiterService = rateLimiterService;
     }
 }

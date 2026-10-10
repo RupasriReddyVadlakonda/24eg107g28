@@ -32,6 +32,7 @@ public class PersonalData {
     private DataType dataType;
     @Column(nullable=false, columnDefinition="TEXT")
     private String encryptedValue;
+    @Column(length=500)
     private String description;
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -198,7 +199,7 @@ public class PersonalData {
 
         @Generated
         public String toString() {
-            return "PersonalData.PersonalDataBuilder(id=" + this.id + ", user=" + String.valueOf(this.user) + ", dataType=" + String.valueOf((Object)this.dataType) + ", encryptedValue=" + this.encryptedValue + ", description=" + this.description + ", createdAt=" + String.valueOf(this.createdAt) + ", updatedAt=" + String.valueOf(this.updatedAt) + ")";
+            return "PersonalData.PersonalDataBuilder(id=" + this.id + ", user=[REDACTED], dataType=" + String.valueOf((Object)this.dataType) + ", encryptedValue=[REDACTED], description=[REDACTED], createdAt=" + String.valueOf(this.createdAt) + ", updatedAt=" + String.valueOf(this.updatedAt) + ")";
         }
     }
 

@@ -164,7 +164,7 @@ public class UserResponse {
 
     @Generated
     public String toString() {
-        return "UserResponse(id=" + this.getId() + ", fullName=" + this.getFullName() + ", email=" + this.getEmail() + ", phoneNumber=" + this.getPhoneNumber() + ", role=" + this.getRole() + ", enabled=" + this.isEnabled() + ", createdAt=" + String.valueOf(this.getCreatedAt()) + ")";
+        return "UserResponse(id=" + this.getId() + ", fullName=[REDACTED], email=[REDACTED], phoneNumber=[REDACTED], role=" + this.getRole() + ", enabled=" + this.isEnabled() + ", createdAt=" + String.valueOf(this.getCreatedAt()) + ")";
     }
 
     @Generated
@@ -252,7 +252,7 @@ public class UserResponse {
 
         @Generated
         public String toString() {
-            return "UserResponse.UserResponseBuilder(id=" + this.id + ", fullName=" + this.fullName + ", email=" + this.email + ", phoneNumber=" + this.phoneNumber + ", role=" + this.role + ", enabled=" + this.enabled + ", createdAt=" + String.valueOf(this.createdAt) + ")";
+            return "UserResponse.UserResponseBuilder(id=" + this.id + ", fullName=[REDACTED], email=[REDACTED], phoneNumber=[REDACTED], role=" + this.role + ", enabled=" + this.enabled + ", createdAt=" + String.valueOf(this.createdAt) + ")";
         }
     }
 }

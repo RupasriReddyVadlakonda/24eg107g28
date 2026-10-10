@@ -54,7 +54,7 @@ public class RefreshTokenRequest {
 
     @Generated
     public String toString() {
-        return "RefreshTokenRequest(refreshToken=" + this.getRefreshToken() + ")";
+        return "RefreshTokenRequest(refreshToken=[REDACTED])";
     }
 }
 

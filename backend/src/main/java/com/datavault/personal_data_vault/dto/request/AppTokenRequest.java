@@ -73,7 +73,7 @@ public class AppTokenRequest {
 
     @Generated
     public String toString() {
-        return "AppTokenRequest(clientId=" + this.getClientId() + ", clientSecret=" + this.getClientSecret() + ")";
+        return "AppTokenRequest(clientId=" + this.getClientId() + ", clientSecret=[REDACTED])";
     }
 }
 

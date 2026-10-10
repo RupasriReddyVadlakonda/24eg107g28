@@ -12,6 +12,7 @@ public class RegisterRequest {
     private @NotBlank @Size(min=2, max=100) String fullName;
     @NotBlank
     @Email
+    @Size(max = 254)
     private String email;
     @NotBlank
     @Size(min=8, max=100)
@@ -118,7 +119,7 @@ public class RegisterRequest {
 
     @Generated
     public String toString() {
-        return "RegisterRequest(fullName=" + this.getFullName() + ", email=" + this.getEmail() + ", password=" + this.getPassword() + ", phoneNumber=" + this.getPhoneNumber() + ")";
+        return "RegisterRequest(fullName=" + this.getFullName() + ", email=" + this.getEmail() + ", password=[REDACTED], phoneNumber=[REDACTED])";
     }
 }
 

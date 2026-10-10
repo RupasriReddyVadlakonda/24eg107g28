@@ -149,7 +149,7 @@ public class PersonalDataResponse {
 
     @Generated
     public String toString() {
-        return "PersonalDataResponse(id=" + this.getId() + ", dataType=" + this.getDataType() + ", value=" + this.getValue() + ", description=" + this.getDescription() + ", createdAt=" + String.valueOf(this.getCreatedAt()) + ", updatedAt=" + String.valueOf(this.getUpdatedAt()) + ")";
+        return "PersonalDataResponse(id=" + this.getId() + ", dataType=" + this.getDataType() + ", value=[REDACTED], description=[REDACTED], createdAt=" + String.valueOf(this.getCreatedAt()) + ", updatedAt=" + String.valueOf(this.getUpdatedAt()) + ")";
     }
 
     @Generated
@@ -228,7 +228,7 @@ public class PersonalDataResponse {
 
         @Generated
         public String toString() {
-            return "PersonalDataResponse.PersonalDataResponseBuilder(id=" + this.id + ", dataType=" + this.dataType + ", value=" + this.value + ", description=" + this.description + ", createdAt=" + String.valueOf(this.createdAt) + ", updatedAt=" + String.valueOf(this.updatedAt) + ")";
+            return "PersonalDataResponse.PersonalDataResponseBuilder(id=" + this.id + ", dataType=" + this.dataType + ", value=[REDACTED], description=[REDACTED], createdAt=" + String.valueOf(this.createdAt) + ", updatedAt=" + String.valueOf(this.updatedAt) + ")";
         }
     }
 }

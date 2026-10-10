@@ -125,7 +125,7 @@ public class AuthResponse {
 
     @Generated
     public String toString() {
-        return "AuthResponse(accessToken=" + this.getAccessToken() + ", refreshToken=" + this.getRefreshToken() + ", userId=" + this.getUserId() + ", email=" + this.getEmail() + ", role=" + this.getRole() + ")";
+        return "AuthResponse(accessToken=[REDACTED], refreshToken=[REDACTED], userId=" + this.getUserId() + ", email=" + this.getEmail() + ", role=" + this.getRole() + ")";
     }
 
     @Generated
@@ -195,7 +195,7 @@ public class AuthResponse {
 
         @Generated
         public String toString() {
-            return "AuthResponse.AuthResponseBuilder(accessToken=" + this.accessToken + ", refreshToken=" + this.refreshToken + ", userId=" + this.userId + ", email=" + this.email + ", role=" + this.role + ")";
+            return "AuthResponse.AuthResponseBuilder(accessToken=[REDACTED], refreshToken=[REDACTED], userId=" + this.userId + ", email=" + this.email + ", role=" + this.role + ")";
         }
     }
 }

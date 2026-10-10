@@ -90,6 +90,7 @@ public class SecurityConfig {
                 // User-protected endpoints
                 .requestMatchers(
                     "/api/auth/logout",
+                    "/api/auth/me",
                     "/api/vault/**",
                     "/api/apps/**",
                     "/api/consents/**",

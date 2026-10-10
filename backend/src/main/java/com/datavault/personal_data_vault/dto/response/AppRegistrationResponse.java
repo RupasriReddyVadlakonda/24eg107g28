@@ -143,7 +143,7 @@ public class AppRegistrationResponse {
 
     @Generated
     public String toString() {
-        return "AppRegistrationResponse(id=" + this.getId() + ", applicationName=" + this.getApplicationName() + ", clientId=" + this.getClientId() + ", clientSecret=" + this.getClientSecret() + ", redirectUri=" + this.getRedirectUri() + ", message=" + this.getMessage() + ")";
+        return "AppRegistrationResponse(id=" + this.getId() + ", applicationName=" + this.getApplicationName() + ", clientId=" + this.getClientId() + ", clientSecret=[REDACTED], redirectUri=" + this.getRedirectUri() + ", message=" + this.getMessage() + ")";
     }
 
     @Generated
@@ -222,7 +222,7 @@ public class AppRegistrationResponse {
 
         @Generated
         public String toString() {
-            return "AppRegistrationResponse.AppRegistrationResponseBuilder(id=" + this.id + ", applicationName=" + this.applicationName + ", clientId=" + this.clientId + ", clientSecret=" + this.clientSecret + ", redirectUri=" + this.redirectUri + ", message=" + this.message + ")";
+            return "AppRegistrationResponse.AppRegistrationResponseBuilder(id=" + this.id + ", applicationName=" + this.applicationName + ", clientId=" + this.clientId + ", clientSecret=[REDACTED], redirectUri=" + this.redirectUri + ", message=" + this.message + ")";
         }
     }
 }

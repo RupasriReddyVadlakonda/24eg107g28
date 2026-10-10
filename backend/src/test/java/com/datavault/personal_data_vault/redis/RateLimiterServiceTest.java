@@ -35,6 +35,23 @@ class RateLimiterServiceTest {
     }
 
     @Test
+    void startsANewRateLimitWindowAfterExpiry() throws InterruptedException {
+        RateLimiterService limiter = new RateLimiterService();
+        ReflectionTestUtils.setField(limiter, "maxRequests", 1);
+        ReflectionTestUtils.setField(limiter, "windowSeconds", 1);
+        ReflectionTestUtils.setField(limiter, "alertWindowSeconds", 1);
+
+        Assertions.assertTrue(limiter.isAllowed("client-expiry"));
+        Assertions.assertFalse(limiter.isAllowed("client-expiry"));
+        Assertions.assertTrue(limiter.isFirstRejectedRequest("client-expiry"));
+
+        Thread.sleep(1_100L);
+
+        Assertions.assertTrue(limiter.isAllowed("client-expiry"));
+        Assertions.assertEquals(1L, limiter.getRateLimitCount("client-expiry"));
+    }
+
+    @Test
     void unauthorizedCounterIncrementsAndResets() {
         RateLimiterService limiter = new RateLimiterService();
         ReflectionTestUtils.setField((Object)limiter, (String)"maxRequests", (Object)10);

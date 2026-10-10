@@ -28,6 +28,7 @@ public class ThirdPartyApplication {
     private String clientSecretHash;
     @Column(columnDefinition="TEXT")
     private String description;
+    @Column(length=2048)
     private String redirectUri;
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="created_by_user_id")
@@ -248,7 +249,7 @@ public class ThirdPartyApplication {
 
         @Generated
         public String toString() {
-            return "ThirdPartyApplication.ThirdPartyApplicationBuilder(id=" + this.id + ", applicationName=" + this.applicationName + ", clientId=" + this.clientId + ", clientSecretHash=" + this.clientSecretHash + ", description=" + this.description + ", redirectUri=" + this.redirectUri + ", createdBy=" + String.valueOf(this.createdBy) + ", active$value=" + this.active$value + ", createdAt=" + String.valueOf(this.createdAt) + ")";
+            return "ThirdPartyApplication.ThirdPartyApplicationBuilder(id=" + this.id + ", applicationName=" + this.applicationName + ", clientId=" + this.clientId + ", clientSecretHash=[REDACTED], description=[REDACTED], redirectUri=[REDACTED], createdBy=" + String.valueOf(this.createdBy) + ", active$value=" + this.active$value + ", createdAt=" + String.valueOf(this.createdAt) + ")";
         }
     }
 }

@@ -105,7 +105,7 @@ public class AppTokenResponse {
 
     @Generated
     public String toString() {
-        return "AppTokenResponse(accessToken=" + this.getAccessToken() + ", tokenType=" + this.getTokenType() + ", expiresIn=" + this.getExpiresIn() + ", applicationId=" + this.getApplicationId() + ")";
+        return "AppTokenResponse(accessToken=[REDACTED], tokenType=" + this.getTokenType() + ", expiresIn=" + this.getExpiresIn() + ", applicationId=" + this.getApplicationId() + ")";
     }
 
     @Generated
@@ -166,7 +166,7 @@ public class AppTokenResponse {
 
         @Generated
         public String toString() {
-            return "AppTokenResponse.AppTokenResponseBuilder(accessToken=" + this.accessToken + ", tokenType=" + this.tokenType + ", expiresIn=" + this.expiresIn + ", applicationId=" + this.applicationId + ")";
+            return "AppTokenResponse.AppTokenResponseBuilder(accessToken=[REDACTED], tokenType=" + this.tokenType + ", expiresIn=" + this.expiresIn + ", applicationId=" + this.applicationId + ")";
         }
     }
 }

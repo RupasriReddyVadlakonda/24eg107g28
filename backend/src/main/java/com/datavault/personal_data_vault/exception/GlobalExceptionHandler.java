@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -47,6 +48,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status((HttpStatusCode)HttpStatus.UNAUTHORIZED).body(ApiResponse.error(ex.getMessage(), "UNAUTHORIZED"));
     }
 
+    @ExceptionHandler(value={RateLimitExceededException.class})
+    public ResponseEntity<ApiResponse<Void>> handleRateLimitExceeded(RateLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(ApiResponse.error(ex.getMessage(), "RATE_LIMIT_EXCEEDED"));
+    }
+
     @ExceptionHandler(value={BadCredentialsException.class})
     public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity.status((HttpStatusCode)HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Invalid credentials", "AUTHENTICATION_FAILED"));
@@ -66,6 +73,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value={ConstraintViolationException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ApiResponse<Void>> handleConstraintViolation(Exception ex) {
         return ResponseEntity.badRequest().body(ApiResponse.error("Request parameter is invalid", "VALIDATION_FAILED"));
+    }
+
+    @ExceptionHandler(value={DataIntegrityViolationException.class})
+    public ResponseEntity<ApiResponse<Void>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error("A record conflicts with existing data", "RESOURCE_CONFLICT"));
     }
 
     @ExceptionHandler(value={HttpMessageNotReadableException.class})

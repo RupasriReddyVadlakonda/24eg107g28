@@ -64,15 +64,13 @@ For cryptographic production key generation, use a vetted secret manager or cryp
 4. API base URL: `http://localhost:8080/api`.
 5. Swagger UI: `http://localhost:8080/swagger-ui.html`; OpenAPI JSON: `http://localhost:8080/api-docs`.
 
-`JPA_DDL_AUTO` defaults to `update` for local development. Set it to `validate` in production and manage schema changes with reviewed migrations. Do not rotate `ENCRYPTION_KEY` without a planned re-encryption/key-version migration; existing ciphertext requires its original key.
+The active backend defaults `JPA_DDL_AUTO` to `validate` to avoid implicit production schema mutation. Set it explicitly to `update` only for a controlled initial/local setup; there are currently no versioned database migrations. Do not rotate `ENCRYPTION_KEY` without a planned re-encryption/key-version migration; existing ciphertext requires its original key.
 
 ## Deploy on Render
 
 Deploy the API as a Render **Web Service** using the repository root as its root directory and Docker as the runtime. The root Dockerfile builds the Maven project from `backend/`; alternatively, configure Render's root directory as `backend` and use `backend/Dockerfile`. Both Dockerfiles pass Render's injected `PORT` to Spring Boot; the default is `8080`.
 
-Set these environment variables in the Render service dashboard; do not upload `.env` or put credentials in the Dockerfile. Since `application.properties` is intentionally preserved and has higher precedence than YAML defaults, set the Spring datasource names explicitly:
-
-Both Docker build contexts exclude `application.properties` so local datasource credentials in that file are not packaged into the deployed image. Provide all runtime configuration using the service's environment variables.
+Set these environment variables in the Render service dashboard; do not upload `.env` or put credentials in the Dockerfile. The backend copies its properties file into the image, but it contains no deployed credentials and resolves database values from environment variables. Set the Spring datasource names explicitly:
 
 - `SPRING_DATASOURCE_URL`: the externally reachable MySQL JDBC URL, including the provider's required TLS options.
 - `SPRING_DATASOURCE_USERNAME` and `SPRING_DATASOURCE_PASSWORD`: database credentials.
@@ -89,7 +87,7 @@ For Netlify, the root `netlify.toml` configures the frontend base directory, bui
 
 ## Configuration
 
-See `.env.example` for local variable names. For deployments and IDE run configurations, use `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, and `SPRING_DATASOURCE_PASSWORD`; environment variables take precedence over the preserved properties file.
+See `.env.example` for local variable names. For deployments and IDE run configurations, use `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, and `SPRING_DATASOURCE_PASSWORD`; environment variables take precedence over the backend properties defaults.
 
 CORS accepts an explicit comma-separated origin allowlist; wildcard origins are rejected because credentials are enabled. The default frontend origin is `http://localhost:5173`.
 
