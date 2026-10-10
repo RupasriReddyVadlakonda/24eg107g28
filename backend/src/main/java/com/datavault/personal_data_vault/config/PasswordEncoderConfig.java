@@ -7,9 +7,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class PasswordEncoderConfig {
+
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new Argon2PasswordEncoder(16, 32, 1, 65536, 3);
+        return new Argon2PasswordEncoder(
+            16,     // Salt length
+            32,     // Hash length
+            1,      // Parallelism
+            65536,  // Memory in KiB
+            3       // Iterations
+        );
     }
 }
 
